@@ -1,0 +1,29 @@
+name: RaceDay CI
+
+on: [push, pull_request]
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check /docs folder exists
+        run: |
+          if [ ! -d "docs" ]; then
+            echo "❌ /docs folder is missing"
+            exit 1
+          fi
+          echo "✅ /docs folder found"
+
+      - name: Check required files exist
+        run: |
+          missing=0
+          [ -f docs/RaceDay_ERD.png ] || { echo "❌ Missing ERD (RaceDay_ERD.png)"; missing=1; }
+          [ -f docs/RaceDay_API_Endpoint_Plan.md ] || { echo "❌ Missing API endpoint plan"; missing=1; }
+          [ -f docs/RaceDay_Database.sql ] || { echo "❌ Missing SQL script"; missing=1; }
+          if [ "$missing" -eq 1 ]; then
+            exit 1
+          fi
+          echo "✅ All required /docs files found"
