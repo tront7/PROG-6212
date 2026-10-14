@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Theon\\Downloads\\RaceDay\\RaceDay.Api\\RaceDay.Api.csproj": {}
+    "C:\\Users\\Theon\\OneDrive\\Documents\\GitHub\\PROG-6212\\RaceDay.Api\\RaceDay.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Theon\\Downloads\\RaceDay\\RaceDay.Api\\RaceDay.Api.csproj": {
+    "C:\\Users\\Theon\\OneDrive\\Documents\\GitHub\\PROG-6212\\RaceDay.Api\\RaceDay.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Theon\\Downloads\\RaceDay\\RaceDay.Api\\RaceDay.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Theon\\OneDrive\\Documents\\GitHub\\PROG-6212\\RaceDay.Api\\RaceDay.Api.csproj",
         "projectName": "RaceDay.Api",
-        "projectPath": "C:\\Users\\Theon\\Downloads\\RaceDay\\RaceDay.Api\\RaceDay.Api.csproj",
+        "projectPath": "C:\\Users\\Theon\\OneDrive\\Documents\\GitHub\\PROG-6212\\RaceDay.Api\\RaceDay.Api.csproj",
         "packagesPath": "C:\\Users\\Theon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Theon\\Downloads\\RaceDay\\RaceDay.Api\\obj\\",
+        "outputPath": "C:\\Users\\Theon\\OneDrive\\Documents\\GitHub\\PROG-6212\\RaceDay.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Theon\\AppData\\Roaming\\NuGet\\NuGet.Config"
