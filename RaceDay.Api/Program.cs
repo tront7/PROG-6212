@@ -50,14 +50,11 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "RaceDay API v1");
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "RaceDay API v1");
+});
 
 app.UseHttpsRedirection();
 

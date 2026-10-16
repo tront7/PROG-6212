@@ -1,0 +1,9 @@
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.csproj.AssemblyReference.cache
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.AssemblyInfoInputs.cache
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.AssemblyInfo.cs
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.csproj.CoreCompileInputs.cache
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Theon\OneDrive\Documents\GitHub\PROG-6212\RaceDay.Tests\obj\Debug\net10.0\RaceDay.Tests.sourcelink.json
