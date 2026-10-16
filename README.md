@@ -144,12 +144,9 @@ This repository uses two GitHub Actions workflows that run on every push and pul
 
 The Part 1 workflow is passing: the latest run on the `main` branch completed successfully with a green build.
 
-**Part 2 successful build screenshot:**
-
-[Insert screenshot of the green Part 2 GitHub Actions run here]
-
 ## Video Walkthrough
 
 An unlisted YouTube video walks through the planning documents, the ERD design decisions, the endpoint plan choices, and runs the SQL script live in SSMS.
 
-**Video link:** [https://youtu.be/jazqQ2GsgoA](https://youtu.be/jazqQ2GsgoA?si=kMgBBIjxG0KRrSAK)
+**Video link:** Part 1:(https://youtu.be/jazqQ2GsgoA?si=kMgBBIjxG0KRrSAK)
+                Part 2:(https://www.youtube.com/watch?v=Qjjwui7VOEc)
