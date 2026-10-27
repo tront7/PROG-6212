@@ -1,0 +1,75 @@
+@model List<EventSummaryDto>
+@{
+    ViewData["Title"] = "Manage events";
+}
+
+<div class="rd-pagehead">
+    <div class="container d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div>
+            <h1>My events</h1>
+            <p>Create, edit and manage everything you organise.</p>
+        </div>
+        <a class="btn btn-lime btn-lg px-4" asp-action="CreateEvent">+ Create event</a>
+    </div>
+</div>
+
+<div class="container py-4">
+    @if (!Model.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">🏁</div>
+                <h2 class="h3">No events yet</h2>
+                <p>Create your first event and open it up for entries.</p>
+                <a class="btn btn-primary" asp-action="CreateEvent">Create an event</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card rd-card">
+            <div class="table-responsive">
+                <table class="table rd-table align-middle">
+                    <thead>
+                        <tr>
+                            <th></th><th>Event</th><th>Date</th><th>Type</th><th>Distance</th><th class="text-center">Categories</th><th class="text-center">Enrolments</th><th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            var thumb = new BannerModel(e.BannerImageUrl, e.EventType, "rd-banner-thumb");
+                            <tr>
+                                <td style="width:90px"><partial name="_EventBanner" model="thumb" /></td>
+                                <td>
+                                    <div class="fw-bold">@e.EventName</div>
+                                    <div class="small text-muted">📍 @e.Location</div>
+                                </td>
+                                <td class="text-nowrap">
+                                    @Formatters.ShortDate(e.EventDate)<br />
+                                    <span class="small text-muted">@Formatters.Time(e.EventDate)@(e.IsUpcoming ? "" : " · past")</span>
+                                </td>
+                                <td><partial name="_TypeBadge" model="e.EventType" /></td>
+                                <td class="text-nowrap">@Formatters.Distance(e.DistanceKm)</td>
+                                <td class="text-center">@e.CategoryCount</td>
+                                <td class="text-center fw-bold">@e.TotalEnrolments</td>
+                                <td class="text-end text-nowrap">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Event actions">
+                                        <a class="btn btn-outline-primary" asp-action="EditEvent" asp-route-id="@e.EventId">Edit</a>
+                                        <a class="btn btn-outline-primary" asp-action="Categories" asp-route-eventId="@e.EventId">Categories</a>
+                                        <a class="btn btn-outline-primary" asp-action="Enrolments" asp-route-eventId="@e.EventId">Enrolments</a>
+                                        <a class="btn btn-outline-primary" asp-action="Results" asp-route-eventId="@e.EventId">Results</a>
+                                    </div>
+                                    <form asp-action="DeleteEvent" asp-route-id="@e.EventId" method="post" class="d-inline"
+                                          onsubmit="return confirm('Delete &quot;@e.EventName&quot;? This cannot be undone.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

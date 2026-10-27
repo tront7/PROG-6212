@@ -1,0 +1,11 @@
+@model BannerModel
+@if (!string.IsNullOrWhiteSpace(Model.Url))
+{
+    <img src="@Model.Url" class="rd-banner @Model.CssClass" alt="Event banner image" loading="lazy" />
+}
+else
+{
+    <div class="rd-banner rd-banner-placeholder banner-@Model.EventType.ToLowerInvariant() @Model.CssClass" aria-hidden="true">
+        <span>@Formatters.TypeIcon(Model.EventType)</span>
+    </div>
+}

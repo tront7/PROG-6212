@@ -1,0 +1,80 @@
+@model ParticipantHomeViewModel
+@{
+    ViewData["Title"] = "Find events";
+    var firstName = (Context.Session.GetString(SessionKeys.FullName) ?? "runner").Split(' ')[0];
+    var f = Model.Filter;
+    string DateValue(DateTime? d) => d.HasValue ? d.Value.ToString("yyyy-MM-dd") : string.Empty;
+}
+
+<div class="rd-pagehead" style="padding-bottom: 3rem;">
+    <div class="container">
+        <h1>Hi @firstName, find your next race</h1>
+        <p>Upcoming road running, walking and cycling events across South Africa.</p>
+    </div>
+</div>
+
+<div class="container">
+    <form method="get" asp-action="Index" class="rd-filter">
+        <div class="row g-2 align-items-end">
+            <div class="col-lg-3">
+                <label class="form-label small mb-1" for="Search">Search</label>
+                <input id="Search" name="Search" class="form-control" placeholder="Event name or keyword" value="@f.Search" />
+            </div>
+            <div class="col-6 col-lg-2">
+                <label class="form-label small mb-1" for="EventType">Type</label>
+                <select id="EventType" name="EventType" class="form-select">
+                    <option value="" selected="@string.IsNullOrEmpty(f.EventType)">All types</option>
+                    <option value="Run" selected="@(f.EventType == "Run")">🏃 Run</option>
+                    <option value="Walk" selected="@(f.EventType == "Walk")">🚶 Walk</option>
+                    <option value="Cycle" selected="@(f.EventType == "Cycle")">🚴 Cycle</option>
+                </select>
+            </div>
+            <div class="col-6 col-lg-2">
+                <label class="form-label small mb-1" for="Location">Location</label>
+                <input id="Location" name="Location" class="form-control" placeholder="Town or city" value="@f.Location" />
+            </div>
+            <div class="col-6 col-lg-2">
+                <label class="form-label small mb-1" for="From">From</label>
+                <input id="From" name="From" type="date" class="form-control" value="@DateValue(f.From)" />
+            </div>
+            <div class="col-6 col-lg-2">
+                <label class="form-label small mb-1" for="To">To</label>
+                <input id="To" name="To" type="date" class="form-control" value="@DateValue(f.To)" />
+            </div>
+            <div class="col-12 col-lg-1 d-grid">
+                <button type="submit" class="btn btn-primary">Go</button>
+            </div>
+        </div>
+        @if (f.HasFilters)
+        {
+            <div class="mt-2"><a class="small fw-bold" asp-action="Index">✕ Clear filters</a></div>
+        }
+    </form>
+
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h2 class="h3 mb-0">@(f.HasFilters ? "Matching events" : "Upcoming events")</h2>
+        <span class="text-muted small">@Model.Events.Count event@(Model.Events.Count == 1 ? "" : "s")</span>
+    </div>
+
+    @if (!Model.Events.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">🔍</div>
+                <h2 class="h3">No events found</h2>
+                <p class="mb-0">@(f.HasFilters ? "Try changing or clearing your filters." : "There are no upcoming events right now. Check back soon!")</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+            @foreach (var ev in Model.Events)
+            {
+                <div class="col">
+                    <partial name="_EventCard" model="ev" />
+                </div>
+            }
+        </div>
+    }
+</div>

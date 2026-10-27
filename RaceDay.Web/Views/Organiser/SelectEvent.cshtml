@@ -1,0 +1,46 @@
+@model EventPickerViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    @if (!Model.Events.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">📅</div>
+                <h2 class="h3">Create an event first</h2>
+                <p>You need at least one event before you can use this page.</p>
+                <a class="btn btn-primary" asp-action="CreateEvent">Create an event</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var e in Model.Events)
+            {
+                <div class="col-md-6 col-xl-4">
+                    <div class="card rd-card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="rd-date-chip">@Formatters.ShortDate(e.EventDate)</span>
+                                <partial name="_TypeBadge" model="e.EventType" />
+                            </div>
+                            <h2 class="h4 mb-1">@e.EventName</h2>
+                            <div class="text-muted small mb-3">📍 @e.Location · @e.TotalEnrolments entered · @e.CategoryCount categories</div>
+                            <a class="btn btn-primary mt-auto" asp-action="@Model.TargetAction" asp-route-eventId="@e.EventId">@Model.ButtonText</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

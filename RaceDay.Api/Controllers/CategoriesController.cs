@@ -20,7 +20,7 @@ public class CategoriesController : ControllerBase
 
     private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    /// <summary>Lists the categories (e.g. 5km, 10km, 21km) for an event. Public.</summary>
+    /// <summary>Lists the categories (e.g. 5km, 10km, 21km) for an event, with how many are enrolled. Public.</summary>
     [HttpGet("api/events/{eventId:int}/categories")]
     [AllowAnonymous]
     public async Task<IActionResult> GetCategories(int eventId)
@@ -30,7 +30,10 @@ public class CategoriesController : ControllerBase
 
         var categories = await _context.Categories
             .Where(c => c.EventId == eventId)
-            .Select(c => new CategoryResponse(c.CategoryId, c.EventId, c.CategoryName, c.DistanceKm, c.MaxParticipants, c.Price))
+            .OrderBy(c => c.DistanceKm)
+            .Select(c => new CategoryResponse(
+                c.CategoryId, c.EventId, c.CategoryName, c.DistanceKm, c.MaxParticipants, c.Price,
+                c.Enrolments.Count(en => en.Status != "Cancelled")))
             .ToListAsync();
 
         return Ok(categories);
@@ -45,10 +48,13 @@ public class CategoriesController : ControllerBase
         if (ev is null) return NotFound();
         if (ev.OrganiserId != CurrentUserId) return Forbid();
 
+        var error = Validate(request.CategoryName, request.DistanceKm, request.MaxParticipants, request.Price);
+        if (error is not null) return BadRequest(error);
+
         var category = new Category
         {
             EventId = eventId,
-            CategoryName = request.CategoryName,
+            CategoryName = request.CategoryName.Trim(),
             DistanceKm = request.DistanceKm,
             MaxParticipants = request.MaxParticipants,
             Price = request.Price
@@ -58,7 +64,8 @@ public class CategoriesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return StatusCode(StatusCodes.Status201Created,
-            new CategoryResponse(category.CategoryId, category.EventId, category.CategoryName, category.DistanceKm, category.MaxParticipants, category.Price));
+            new CategoryResponse(category.CategoryId, category.EventId, category.CategoryName,
+                category.DistanceKm, category.MaxParticipants, category.Price, 0));
     }
 
     /// <summary>Updates a category. Only the owning organiser may update it.</summary>
@@ -70,7 +77,10 @@ public class CategoriesController : ControllerBase
         if (category is null) return NotFound();
         if (category.Event.OrganiserId != CurrentUserId) return Forbid();
 
-        category.CategoryName = request.CategoryName;
+        var error = Validate(request.CategoryName, request.DistanceKm, request.MaxParticipants, request.Price);
+        if (error is not null) return BadRequest(error);
+
+        category.CategoryName = request.CategoryName.Trim();
         category.DistanceKm = request.DistanceKm;
         category.MaxParticipants = request.MaxParticipants;
         category.Price = request.Price;
@@ -79,7 +89,7 @@ public class CategoriesController : ControllerBase
         return Ok();
     }
 
-    /// <summary>Deletes a category. Only the owning organiser may delete it.</summary>
+    /// <summary>Deletes a category. Only the owning organiser may delete it, and only if nobody is enrolled.</summary>
     [HttpDelete("api/categories/{id:int}")]
     [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> DeleteCategory(int id)
@@ -88,8 +98,21 @@ public class CategoriesController : ControllerBase
         if (category is null) return NotFound();
         if (category.Event.OrganiserId != CurrentUserId) return Forbid();
 
+        var hasEnrolments = await _context.Enrolments.AnyAsync(e => e.CategoryId == id);
+        if (hasEnrolments)
+            return Conflict("This category already has enrolments and cannot be deleted.");
+
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync();
         return NoContent();
+    }
+
+    private static string? Validate(string? name, decimal distanceKm, int maxParticipants, decimal price)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "Category name is required.";
+        if (distanceKm <= 0) return "Distance must be greater than 0 km.";
+        if (maxParticipants < 1) return "Maximum participants must be at least 1.";
+        if (price < 0) return "Price cannot be negative.";
+        return null;
     }
 }

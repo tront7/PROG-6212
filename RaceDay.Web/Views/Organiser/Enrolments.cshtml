@@ -1,0 +1,72 @@
+@model EnrolmentsPageViewModel
+@{
+    ViewData["Title"] = "Enrolments · " + Model.Event.EventName;
+    var statuses = new[] { "Confirmed", "Pending", "Cancelled" };
+    var confirmed = Model.Enrolments.Count(e => e.Status == "Confirmed");
+    var pending = Model.Enrolments.Count(e => e.Status == "Pending");
+    var cancelled = Model.Enrolments.Count(e => e.Status == "Cancelled");
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>Enrolments</h1>
+        <p>@Model.Event.EventName · @Formatters.ShortDate(Model.Event.EventDate) · <a asp-action="Events">← All events</a></p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="rd-stat"><div class="num">@Model.Enrolments.Count</div><div class="lbl">Total entries</div></div></div>
+        <div class="col-6 col-md-3"><div class="rd-stat alt"><div class="num">@confirmed</div><div class="lbl">Confirmed</div></div></div>
+        <div class="col-6 col-md-3"><div class="rd-stat navy"><div class="num">@pending</div><div class="lbl">Pending</div></div></div>
+        <div class="col-6 col-md-3"><div class="rd-stat" style="border-left-color:#d64545"><div class="num">@cancelled</div><div class="lbl">Cancelled</div></div></div>
+    </div>
+
+    <div class="card rd-card">
+        @if (!Model.Enrolments.Any())
+        {
+            <div class="rd-empty">
+                <div class="big">🙋</div>
+                <h2 class="h3">No one has entered yet</h2>
+                <p class="mb-0">Entries will show up here as soon as participants enrol.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table rd-table">
+                    <thead>
+                        <tr><th>Participant</th><th>Category</th><th>Enrolled</th><th>Status</th><th>Change status</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model.Enrolments)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">@e.ParticipantName</div>
+                                    <div class="small text-muted">@e.ParticipantEmail</div>
+                                </td>
+                                <td>@e.CategoryName</td>
+                                <td class="text-nowrap">@Formatters.ShortDate(e.EnrolmentDate)</td>
+                                <td><partial name="_StatusBadge" model="e.Status" /></td>
+                                <td>
+                                    <form asp-action="UpdateEnrolmentStatus" method="post" class="d-flex gap-1" style="max-width:260px">
+                                        <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                                        <input type="hidden" name="eventId" value="@Model.Event.EventId" />
+                                        <select name="status" class="form-select form-select-sm" aria-label="Enrolment status">
+                                            @foreach (var s in statuses)
+                                            {
+                                                <option value="@s" selected="@(e.Status == s)">@s</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-navy">Update</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

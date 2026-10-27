@@ -1,0 +1,100 @@
+@model CategoriesPageViewModel
+@{
+    ViewData["Title"] = "Categories · " + Model.Event.EventName;
+    var isEdit = Model.Form.IsEdit;
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>Categories</h1>
+        <p>@Model.Event.EventName · @Formatters.ShortDate(Model.Event.EventDate) · <a asp-action="Events">← All events</a></p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card rd-card">
+                <div class="card-body p-4">
+                    <h2 class="h3 mb-3">Categories for this event</h2>
+                    @if (!Model.Categories.Any())
+                    {
+                        <div class="rd-empty py-4">
+                            <div class="big">🏷️</div>
+                            <p class="mb-0">No categories yet. Add distance or age categories (for example 5km, 10km, 21km, Under 20 or Senior) using the form.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table rd-table">
+                                <thead>
+                                    <tr><th>Category</th><th>Distance</th><th>Entry fee</th><th>Entered</th><th class="text-end">Actions</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var c in Model.Categories)
+                                    {
+                                        <tr class="@(isEdit && c.CategoryId == Model.Form.CategoryId ? "table-warning" : "")">
+                                            <td class="fw-bold">@c.CategoryName</td>
+                                            <td class="text-nowrap">@Formatters.Distance(c.DistanceKm)</td>
+                                            <td class="text-nowrap">@Formatters.Rand(c.Price)</td>
+                                            <td class="text-nowrap">@c.EnrolledCount / @c.MaxParticipants @(c.IsFull ? "· full" : "")</td>
+                                            <td class="text-end text-nowrap">
+                                                <a class="btn btn-sm btn-outline-primary" asp-action="Categories" asp-route-eventId="@Model.Event.EventId" asp-route-editId="@c.CategoryId">Edit</a>
+                                                <form asp-action="DeleteCategory" asp-route-id="@c.CategoryId" asp-route-eventId="@Model.Event.EventId" method="post" class="d-inline"
+                                                      onsubmit="return confirm('Delete this category?');">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card rd-card">
+                <div class="card-body p-4">
+                    <h2 class="h3 mb-3">@(isEdit ? "Edit category" : "Add a category")</h2>
+
+                    <form asp-action="SaveCategory" method="post" data-once novalidate>
+                        <div asp-validation-summary="All" class="alert alert-danger rd-alert py-2"></div>
+                        <input type="hidden" asp-for="Form.EventId" />
+                        <input type="hidden" asp-for="Form.CategoryId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Form.CategoryName" class="form-label"></label>
+                            <input asp-for="Form.CategoryName" class="form-control" maxlength="50" placeholder="e.g. 10km, Under 20, Senior" required />
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label asp-for="Form.DistanceKm" class="form-label"></label>
+                                <input asp-for="Form.DistanceKm" class="form-control" type="number" step="0.1" min="0.1" required />
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="Form.MaxParticipants" class="form-label"></label>
+                                <input asp-for="Form.MaxParticipants" class="form-control" type="number" min="1" required />
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Form.Price" class="form-label"></label>
+                            <input asp-for="Form.Price" class="form-control" type="number" step="0.01" min="0" />
+                            <div class="form-text">Enter 0 for a free category.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">@(isEdit ? "Save category" : "Add category")</button>
+                            @if (isEdit)
+                            {
+                                <a class="btn btn-outline-secondary" asp-action="Categories" asp-route-eventId="@Model.Event.EventId">Cancel</a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+@model EnrolmentsPageViewModel
+@{
+    ViewData["Title"] = "Results · " + Model.Event.EventName;
+    var entrants = Model.Enrolments.Where(e => e.Status != "Cancelled").ToList();
+    var captured = entrants.Count(e => e.ResultId.HasValue);
+    var resultStatuses = new[] { "Finished", "DNF", "DQ" };
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>Results entry</h1>
+        <p>@Model.Event.EventName · @Formatters.ShortDate(Model.Event.EventDate) · <a asp-action="Events">← All events</a></p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="alert alert-light border rd-alert">
+        <strong>@captured of @entrants.Count</strong> results captured. Saving a result publishes it straight away,
+        so participants see their finish time and position on their <em>My results</em> page.
+        Enter times as <code>hh:mm:ss</code>, for example <code>00:52:30</code>.
+    </div>
+
+    @if (!entrants.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">⏱️</div>
+                <h2 class="h3">No entrants to score</h2>
+                <p class="mb-0">Once participants enrol (and are not cancelled) they'll appear here for results entry.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var e in entrants.OrderBy(x => x.CategoryName).ThenBy(x => x.Position ?? int.MaxValue).ThenBy(x => x.ParticipantName))
+        {
+            <form asp-action="SaveResult" method="post" class="rd-result-row" data-once>
+                <input type="hidden" name="EventId" value="@Model.Event.EventId" />
+                <input type="hidden" name="EnrolmentId" value="@e.EnrolmentId" />
+                <input type="hidden" name="ResultId" value="@e.ResultId" />
+
+                <div class="row g-2 align-items-end">
+                    <div class="col-lg-4">
+                        <div class="fw-bold">@e.ParticipantName</div>
+                        <div class="small text-muted">
+                            @e.CategoryName
+                            · <partial name="_StatusBadge" model="e.Status" />
+                            @if (e.ResultId.HasValue)
+                            {
+                                <span class="ms-1"><partial name="_StatusBadge" model="@(e.ResultStatus ?? "Finished")" /></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="form-label small mb-1">Finish time</label>
+                        <input name="FinishTime" class="form-control form-control-sm rd-time" placeholder="00:52:30"
+                               value="@(e.FinishTime.HasValue ? Formatters.FinishTime(e.FinishTime) : "")" inputmode="numeric" />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="form-label small mb-1">Position</label>
+                        <input name="Position" type="number" min="1" class="form-control form-control-sm" placeholder="e.g. 47" value="@e.Position" />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="form-label small mb-1">Outcome</label>
+                        <select name="Status" class="form-select form-select-sm">
+                            @foreach (var s in resultStatuses)
+                            {
+                                <option value="@s" selected="@((e.ResultStatus ?? "Finished") == s)">@s</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-6 col-lg-2 d-grid">
+                        <button type="submit" class="btn btn-sm btn-primary">@(e.ResultId.HasValue ? "Update result" : "Save result")</button>
+                    </div>
+                </div>
+            </form>
+        }
+    }
+</div>

@@ -1,0 +1,90 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "My profile";
+    var initial = string.IsNullOrWhiteSpace(Model.FullName) ? "?" : Model.FullName.Trim()[0].ToString().ToUpperInvariant();
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>My profile</h1>
+        <p>Update your details and profile picture.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card rd-card text-center">
+                <div class="card-body p-4">
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                    {
+                        <img id="picturePreview" src="@Model.ProfilePictureUrl" class="rd-avatar rd-avatar-lg mb-3" alt="Your profile picture" />
+                    }
+                    else
+                    {
+                        <span id="pictureInitial" class="rd-avatar rd-avatar-lg mb-3">@initial</span>
+                        <img id="picturePreview" src="" class="rd-avatar rd-avatar-lg mb-3 d-none" alt="Preview of your new picture" />
+                    }
+                    <h2 class="h3 mb-1">@Model.FullName</h2>
+                    <div class="mb-2"><span class="rd-rolechip">@Model.Role</span></div>
+                    <p class="text-muted small mb-0">Member since @Formatters.ShortDate(Model.MemberSince)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card rd-card">
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post" enctype="multipart/form-data" data-once novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rd-alert py-2"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FullName" class="form-label"></label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">Email address</label>
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" class="form-control" type="tel" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PictureFile" class="form-label"></label>
+                                <input asp-for="PictureFile" class="form-control" type="file" accept="image/jpeg,image/png,image/webp,image/gif" data-preview="#picturePreview" />
+                                <span asp-validation-for="PictureFile" class="text-danger"></span>
+                                <div class="form-text">JPG, PNG, WEBP or GIF, up to 5 MB.</div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" asp-for="ProfilePictureUrl" />
+                        <input type="hidden" asp-for="Role" />
+                        <input type="hidden" asp-for="MemberSince" />
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary px-4">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Hide the initial-letter avatar once a new picture has been chosen.
+        var fileInput = document.querySelector('input[type="file"][data-preview]');
+        var initialBadge = document.getElementById('pictureInitial');
+        if (fileInput && initialBadge) {
+            fileInput.addEventListener('change', function () {
+                if (fileInput.files && fileInput.files[0]) initialBadge.classList.add('d-none');
+            });
+        }
+    </script>
+}

@@ -1,0 +1,73 @@
+@model List<MyResultDto>
+@{
+    ViewData["Title"] = "My results";
+    var finished = Model.Where(r => r.Status == "Finished").ToList();
+    var best = finished.Where(r => r.Position.HasValue).OrderBy(r => r.Position).FirstOrDefault();
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>My results</h1>
+        <p>Your personal race history: finish times and finishing positions.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    @if (!Model.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">🏅</div>
+                <h2 class="h3">No results yet</h2>
+                <p class="mb-3">Once an organiser captures your finish time after an event, it'll appear here.</p>
+                <a class="btn btn-primary" asp-action="MyEvents">View my entries</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4"><div class="rd-stat"><div class="num">@Model.Count</div><div class="lbl">Races recorded</div></div></div>
+            <div class="col-sm-4"><div class="rd-stat alt"><div class="num">@finished.Count</div><div class="lbl">Finished</div></div></div>
+            <div class="col-sm-4">
+                <div class="rd-stat navy">
+                    <div class="num">@(best?.Position is int p ? Formatters.Ordinal(p) : "–")</div>
+                    <div class="lbl">Best finishing position</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rd-card">
+            <div class="table-responsive">
+                <table class="table rd-table">
+                    <thead>
+                        <tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th><th>Outcome</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td><a class="fw-bold text-decoration-none" asp-action="EventDetails" asp-route-id="@r.EventId">@r.EventName</a></td>
+                                <td class="text-nowrap">@Formatters.ShortDate(r.EventDate)</td>
+                                <td>@r.CategoryName</td>
+                                <td class="rd-time">@Formatters.FinishTime(r.FinishTime)</td>
+                                <td>
+                                    @if (r.Position.HasValue && r.Status == "Finished")
+                                    {
+                                        <span class="rd-position">@Formatters.Ordinal(r.Position.Value)</span>
+                                        <small>of @r.TotalFinishers finisher@(r.TotalFinishers == 1 ? "" : "s")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">–</span>
+                                    }
+                                </td>
+                                <td><partial name="_StatusBadge" model="r.Status" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

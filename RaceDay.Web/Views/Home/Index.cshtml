@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Your next finish line";
+}
+
+<section class="rd-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7">
+                <span class="rd-rolechip mb-3 d-inline-block">Road running · walking · cycling</span>
+                <h1 class="mb-3">Your next <em>finish line</em> starts here.</h1>
+                <p class="lead mb-4">
+                    RaceDay brings South Africa's road events into one place. Organisers create events and capture results.
+                    Participants find a race, enter in a few taps and track every finish.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-lg px-4" asp-controller="Account" asp-action="Register">Create a free account</a>
+                    <a class="btn btn-outline-light btn-lg px-4" asp-controller="Account" asp-action="Login">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="rd-feature">
+                <div class="ico mb-2">🏃</div>
+                <h2 class="h3">For participants</h2>
+                <p class="text-muted mb-0">Browse upcoming events, filter by type, location and date, pick your distance and enter. Your entries and race history are always one click away.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="rd-feature" style="border-top-color: var(--rd-lime)">
+                <div class="ico mb-2">📋</div>
+                <h2 class="h3">For organisers</h2>
+                <p class="text-muted mb-0">Create events with banners, set up age and distance categories, see who has entered and publish finish times and positions.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="rd-feature" style="border-top-color: var(--rd-navy)">
+                <div class="ico mb-2">🏁</div>
+                <h2 class="h3">Every finish counts</h2>
+                <p class="text-muted mb-0">See your finish time and your position out of everyone who finished: your personal race history, all in one place.</p>
+            </div>
+        </div>
+    </div>
+</section>

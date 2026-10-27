@@ -1,0 +1,63 @@
+@model List<EnrolmentDto>
+@{
+    ViewData["Title"] = "My events";
+    var today = DateTime.UtcNow.Date;
+}
+
+<div class="rd-pagehead">
+    <div class="container">
+        <h1>My events</h1>
+        <p>Every event you've entered and where each entry stands.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    @if (!Model.Any())
+    {
+        <div class="card rd-card">
+            <div class="rd-empty">
+                <div class="big">🎽</div>
+                <h2 class="h3">You haven't entered any events yet</h2>
+                <p>Find a race that suits you and enter in a few taps.</p>
+                <a class="btn btn-primary" asp-action="Index">Find events</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card rd-card">
+            <div class="table-responsive">
+                <table class="table rd-table">
+                    <thead>
+                        <tr><th>Event</th><th>Date</th><th>Category</th><th>Entered on</th><th>Status</th><th class="text-end"></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td><a class="fw-bold text-decoration-none" asp-action="EventDetails" asp-route-id="@e.EventId">@e.EventName</a></td>
+                                <td class="text-nowrap">@Formatters.ShortDate(e.EventDate)</td>
+                                <td>@e.CategoryName</td>
+                                <td class="text-nowrap">@Formatters.ShortDate(e.EnrolmentDate)</td>
+                                <td><partial name="_StatusBadge" model="e.Status" /></td>
+                                <td class="text-end">
+                                    @if (e.ResultId.HasValue)
+                                    {
+                                        <a class="btn btn-sm btn-outline-primary" asp-action="MyResults">See result</a>
+                                    }
+                                    else if (e.EventDate >= today && e.Status != "Cancelled")
+                                    {
+                                        <form asp-action="CancelEnrolment" asp-route-id="@e.EnrolmentId" method="post" class="d-inline"
+                                              onsubmit="return confirm('Cancel your entry to this event?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel entry</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

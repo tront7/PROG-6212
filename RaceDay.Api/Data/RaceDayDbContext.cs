@@ -38,6 +38,7 @@ public class RaceDayDbContext : DbContext
         modelBuilder.Entity<Event>(entity =>
         {
             entity.HasKey(e => e.EventId);
+            entity.Property(e => e.DistanceKm).HasPrecision(6, 2);
 
             entity.HasOne(e => e.Organiser)
                   .WithMany(u => u.OrganisedEvents)
@@ -49,6 +50,8 @@ public class RaceDayDbContext : DbContext
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(c => c.CategoryId);
+            entity.Property(c => c.DistanceKm).HasPrecision(6, 2);
+            entity.Property(c => c.Price).HasPrecision(8, 2);
 
             entity.HasOne(c => c.Event)
                   .WithMany(e => e.Categories)

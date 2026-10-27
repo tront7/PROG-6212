@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using RaceDay.Api.DTOs;
@@ -24,5 +25,33 @@ public static class TestHelpers
         loginResponse.EnsureSuccessStatusCode();
 
         return client;
+    }
+
+    /// <summary>Builds a multipart/form-data body containing a single file field called "file".</summary>
+    public static MultipartFormDataContent FileUpload(string fileName, string contentType)
+    {
+        var fileContent = new ByteArrayContent(new byte[] { 1, 2, 3, 4 });
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+        var form = new MultipartFormDataContent();
+        form.Add(fileContent, "file", fileName);
+        return form;
+    }
+
+    /// <summary>Creates an event (and optionally one category) as the given organiser client.</summary>
+    public static async Task<(EventResponse ev, CategoryResponse category)> CreateEventWithCategoryAsync(
+        HttpClient organiser, string eventName = "Test Event", string eventType = "Run")
+    {
+        var eventResponse = await organiser.PostAsJsonAsync("/api/events",
+            new CreateEventRequest(eventName, DateTime.UtcNow.AddMonths(1), "Pretoria", "Test event", 10, eventType));
+        eventResponse.EnsureSuccessStatusCode();
+        var ev = await eventResponse.Content.ReadFromJsonAsync<EventResponse>();
+
+        var categoryResponse = await organiser.PostAsJsonAsync($"/api/events/{ev!.EventId}/categories",
+            new CreateCategoryRequest("10km", 10, 50, 120));
+        categoryResponse.EnsureSuccessStatusCode();
+        var category = await categoryResponse.Content.ReadFromJsonAsync<CategoryResponse>();
+
+        return (ev, category!);
     }
 }

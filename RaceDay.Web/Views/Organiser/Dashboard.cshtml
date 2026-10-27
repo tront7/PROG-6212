@@ -1,0 +1,115 @@
+@model OrganiserDashboardViewModel
+@{
+    ViewData["Title"] = "Organiser dashboard";
+    var firstName = (Context.Session.GetString(SessionKeys.FullName) ?? "there").Split(' ')[0];
+}
+
+<div class="rd-pagehead">
+    <div class="container d-flex flex-wrap justify-content-between align-items-end gap-3">
+        <div>
+            <h1>Hi @firstName, ready to race?</h1>
+            <p>Here's how your events are shaping up.</p>
+        </div>
+        <a class="btn btn-lime btn-lg px-4" asp-action="CreateEvent">+ Create event</a>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+            <div class="rd-stat">
+                <div class="num">@Model.TotalEvents</div>
+                <div class="lbl">Events created</div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="rd-stat alt">
+                <div class="num">@Model.TotalEnrolments</div>
+                <div class="lbl">Total enrolments</div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="rd-stat navy">
+                <div class="num">@Model.UpcomingCount</div>
+                <div class="lbl">Upcoming events</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card rd-card h-100">
+                <div class="card-body p-4">
+                    <h2 class="h3 mb-3">Coming up</h2>
+                    @if (!Model.Upcoming.Any())
+                    {
+                        <p class="text-muted mb-0">No upcoming events yet. Create one to get started.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var e in Model.Upcoming)
+                            {
+                                <li class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                                    <div>
+                                        <div class="rd-date-chip">@Formatters.ShortDate(e.EventDate) · @Formatters.Time(e.EventDate)</div>
+                                        <div class="fw-bold">@e.EventName</div>
+                                        <div class="small text-muted">📍 @e.Location</div>
+                                    </div>
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Enrolments" asp-route-eventId="@e.EventId">@e.TotalEnrolments entered</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card rd-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h3 mb-0">Enrolments per event</h2>
+                        <a asp-action="Events" class="small fw-bold">Manage events →</a>
+                    </div>
+                    @if (!Model.Events.Any())
+                    {
+                        <div class="rd-empty py-4">
+                            <div class="big">📅</div>
+                            <p class="mb-0">You haven't created any events yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        var max = Math.Max(1, Model.Events.Max(e => e.TotalEnrolments));
+                        <div class="table-responsive">
+                            <table class="table rd-table">
+                                <thead>
+                                    <tr><th>Event</th><th>Date</th><th>Type</th><th class="text-end">Enrolments</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var e in Model.Events)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@e.EventName</td>
+                                            <td class="text-nowrap">@Formatters.ShortDate(e.EventDate)</td>
+                                            <td><partial name="_TypeBadge" model="e.EventType" /></td>
+                                            <td class="text-end" style="min-width:140px">
+                                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                                    <div class="progress flex-grow-1" style="height:8px">
+                                                        <div class="progress-bar" style="width:@(e.TotalEnrolments * 100 / max)%; background:var(--rd-orange)"></div>
+                                                    </div>
+                                                    <strong>@e.TotalEnrolments</strong>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
