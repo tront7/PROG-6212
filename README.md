@@ -162,6 +162,7 @@ New endpoints were also added: event filtering, `GET /api/events/mine` (dashboar
 ## Video Walkthroughs
 
 - **Part 1:** [Planning documents, ERD, endpoint plan and SQL script](https://youtu.be/jazqQ2GsgoA?si=kMgBBIjxG0KRrSAK)
+- **Part 2:** [Video walkthrough](https://www.youtube.com/watch?v=Qjjwui7VOEc)
 - **Part 3:** [Insert unlisted YouTube link here]
 
 ## Troubleshooting
